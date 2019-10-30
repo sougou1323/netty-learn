@@ -3,6 +3,10 @@
 
 package protobuf;
 
+import com.sun.xml.internal.ws.developer.Serialization;
+
+import java.io.Serializable;
+
 public final class SubscribeReqProto {
   private SubscribeReqProto() {}
   public static void registerAllExtensions(
@@ -86,7 +90,7 @@ public final class SubscribeReqProto {
   public  static final class SubscribeReq extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:netty.SubscribeReq)
-      SubscribeReqOrBuilder {
+      SubscribeReqOrBuilder, Serializable {
   private static final long serialVersionUID = 0L;
     // Use SubscribeReq.newBuilder() to construct.
     private SubscribeReq(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {

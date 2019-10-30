@@ -3,6 +3,10 @@
 
 package protobuf;
 
+import com.sun.xml.internal.ws.developer.Serialization;
+
+import java.io.Serializable;
+
 public final class SubscribeRespProto {
   private SubscribeRespProto() {}
   public static void registerAllExtensions(
@@ -60,10 +64,11 @@ public final class SubscribeRespProto {
   /**
    * Protobuf type {@code netty.SubscribeResp}
    */
+  @Serialization
   public  static final class SubscribeResp extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:netty.SubscribeResp)
-      SubscribeRespOrBuilder {
+      SubscribeRespOrBuilder, Serializable {
   private static final long serialVersionUID = 0L;
     // Use SubscribeResp.newBuilder() to construct.
     private SubscribeResp(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {

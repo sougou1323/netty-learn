@@ -1,8 +1,7 @@
-package _8;
+package _9;
 
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import protobuf.SubscribeReqProto;
 
 /**
  * 描述:
@@ -20,13 +19,14 @@ public class SubReqClientHandler extends ChannelHandlerAdapter {
         ctx.flush();
     }
 
-    private SubscribeReqProto.SubscribeReq subReq(int i) {
-        SubscribeReqProto.SubscribeReq.Builder builder = SubscribeReqProto.SubscribeReq.newBuilder();
-        builder.setSubReqId(i)
-                .setUserName("huang")
-                .setProductName("netty book for protobuf")
-                .setAddress("nanjing yuhuatai beijing liulichagn shenzhen hongshulin");
-        return builder.build();
+    private SubscribeReq subReq(int i) {
+        SubscribeReq req = new SubscribeReq();
+        req.setSubReqID(i);
+        req.setUserName("huang");
+        req.setAddress("NanJing YuHuaTai");
+        req.setPhoneNumber("138xxxxxxxxx");
+        req.setProductName("Netty Book For Marshalling");
+        return req;
     }
 
     @Override

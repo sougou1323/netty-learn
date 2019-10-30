@@ -1,5 +1,9 @@
-package _8;
+package _12.server;
 
+import _12.NettyConstant;
+import _12.client.NettyClient;
+import _12.codec.decoder.NettyMessageDecoder;
+import _12.codec.encoder.NettyMessageEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -7,25 +11,18 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.protobuf.ProtobufDecoder;
-import io.netty.handler.codec.protobuf.ProtobufEncoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import protobuf.SubscribeReqProto;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 
 /**
- * 描述:
- *
  * @author huang
- * @since 2019-10-11 5:12 PM
+ * @version v1.0
+ * @date 2019-10-22 10:29 PM
  */
+public class NettyServer {
 
-public class SubReqServer {
-
-    public void bind(int port) throws InterruptedException {
-
+    public void bind() throws InterruptedException {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -38,14 +35,16 @@ public class SubReqServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline().addLast(new ProtobufVarint32FrameDecoder())
-                                    .addLast(new ProtobufDecoder(SubscribeReqProto.SubscribeReq.getDefaultInstance()))
-                                    .addLast(new ProtobufVarint32LengthFieldPrepender())
-                                    .addLast(new ProtobufEncoder())
-                                    .addLast(new SubReqServerHandler());
+                            ch.pipeline().addLast(
+                                    new NettyMessageDecoder(1024 * 1024, 4, 4));
+                            ch.pipeline().addLast(new NettyMessageEncoder());
+                            ch.pipeline().addLast(new ReadTimeoutHandler(50));
+                            ch.pipeline().addLast(new LoginAuthRespHandler());
+                            ch.pipeline().addLast(new HeartBeatRespHandler());
                         }
                     });
-            ChannelFuture f = b.bind(port).sync();
+
+            ChannelFuture f = b.bind(NettyConstant.PORT).sync();
             f.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
@@ -54,6 +53,6 @@ public class SubReqServer {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new SubReqServer().bind(8080);
+        new NettyServer().bind();
     }
 }

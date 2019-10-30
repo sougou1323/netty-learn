@@ -1,27 +1,22 @@
-package _5._1;
+package _9;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
 
 /**
- * 描述:
- *
  * @author huang
- * @since 2019-10-06 7:24 PM
+ * @version v1.0
+ * @date 2019-10-22 2:36 PM
  */
-public class EchoClient {
+public class SubReqClient {
 
     public void connect(int port, String host) throws InterruptedException {
-
         NioEventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
@@ -30,15 +25,12 @@ public class EchoClient {
                     .option(ChannelOption.TCP_NODELAY, true)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            ByteBuf delimiter = Unpooled.copiedBuffer("$_".getBytes());
-                            socketChannel.pipeline()
-                                    .addLast(new DelimiterBasedFrameDecoder(1024, delimiter))
-                                    .addLast(new StringDecoder())
-                                    .addLast(new EchoClientHandler());
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            ch.pipeline().addLast(MarshallingCodeCFactory.buildMarshallingDecoder());
+                            ch.pipeline().addLast(MarshallingCodeCFactory.buildMarshallingEncoder());
+                            ch.pipeline().addLast(new SubReqClientHandler());
                         }
                     });
-
             ChannelFuture f = b.connect(host, port).sync();
             f.channel().closeFuture().sync();
         } finally {
@@ -47,7 +39,6 @@ public class EchoClient {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new EchoClient().connect(8080, "127.0.0.1");
+        new SubReqClient().connect(8080, "127.0.0.1");
     }
-
 }
